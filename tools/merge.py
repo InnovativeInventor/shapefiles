@@ -201,3 +201,13 @@ def augment_shapefile(primary, secondary, identifying_cols=["COUNTYFP", "VTDST"]
 def normalize(name: str) -> str:
     return name.replace("Voting District", "").split("(")[0].rstrip()
 
+# vtd_shapefiles = glob.glob("census/*_vtd20.shp")
+# print(vtd_shapefiles)
+# merged_shapefile = merge_shapefiles(vtd_shapefiles)
+# merged_shapefile.to_file("PA_vtd.shp")
+census_vtd = geopandas.read_file("census/tl_2020_42_vtd20.shp")
+mcdonald_shapefile = geopandas.read_file("data/pa_2018.shp")
+augmented_shapefile = augment_shapefile(census_vtd, mcdonald_shapefile, threshold=-1)
+
+# augmented_shapefile["geometry"] = maup.resolve_overlaps(augmented_shapefile["geometry"])
+augmented_shapefile.to_file("drafts/PA_with_2018.shp")
