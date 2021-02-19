@@ -1,6 +1,8 @@
 import geopandas
+from pmatcher import PrecinctMatcher
 from shapely.strtree import STRtree
-import maup
+# from shapely.validation import make_valid
+# import maup
 import glob
 import tqdm
 import math
@@ -54,11 +56,27 @@ def merge_shapefiles(vtd_shapefiles):
 
     return aggregate_shapefile
 
+def make_valid(geo):
+    """
+    Drop in before shapely releases make_valid on stable
+    """
+    return geo.buffer(0)
+
 def commonality(geo_1, geo_2):
     """
     Calculates commonality (as defined by intersection/union). Returns a float between 0 and 1 (inclusive).
     """
-    return geo_1["geometry"].intersection(geo_2["geometry"]).area/geo_1["geometry"].union(geo_2["geometry"]).area
+    try:
+        return geo_1["geometry"].intersection(geo_2["geometry"]).area/geo_1["geometry"].union(geo_2["geometry"]).area
+    except:
+        geo_1_valid = make_valid(geo_1["geometry"])
+        geo_2_valid = make_valid(geo_2["geometry"])
+        # geo_1_valid = make_valid(geo_1["geometry"]).buffer(0)
+        # geo_2_valid = make_valid(geo_2["geometry"]).buffer(0)
+        try:
+            return geo_1_valid.intersection(geo_2_valid).area/geo_1_valid.union(geo_2_valid).area
+        except: # fail safe or deadly?
+            return 1
 
 def augment_shapefile(primary, secondary, identifying_cols=["COUNTYFP", "VTDST"],
                       primary_map = {"NAME": "NAMELSAD20", "COUNTYFP": "COUNTYFP20", "VTDST": "VTDST20"},
@@ -92,7 +110,10 @@ def augment_shapefile(primary, secondary, identifying_cols=["COUNTYFP", "VTDST"]
         attributes["from_census"] = False
         unique_attributes = []
         for col in identifying_cols:
-            unique_attributes.append(attributes[primary_map[col]].rstrip())
+            try:
+                unique_attributes.append(attributes[primary_map[col]].rstrip())
+            except TypeError as e:
+                breakpoint()
 
         vtd_hash = hash(tuple(unique_attributes))
         name = normalize(attributes[primary_map["NAME"]])
@@ -102,7 +123,7 @@ def augment_shapefile(primary, secondary, identifying_cols=["COUNTYFP", "VTDST"]
             unique_attributes_dict[col] = (attributes[primary_map[col]])
 
 
-        # criteria for updating geometry, defaults to not updating
+        # criteria for updating, defaults to not updating
         if vtd_hash in vtd_map:
             corresponding_loc = vtd_map[vtd_hash]
             new_geometry = secondary.iloc[corresponding_loc]["geometry"]
@@ -139,75 +160,30 @@ def augment_shapefile(primary, secondary, identifying_cols=["COUNTYFP", "VTDST"]
                     # attributes["geometry"] = new_geometry
                     attributes["from_census"] = True
 
-        # if location == 0:
-        #     state_union = attributes["geometry"]
-        # else:
-        #     state_union = state_union.union(attributes["geometry"])
-        #     if state_union.intersection(attributes["geometry"]) != 0:
-
         geoseries_list.append(attributes)
 
-    # for location, attributes in tqdm.tqdm(secondary.iterrows()): # generate hash map
-    #     identifying_tuple = ((attributes[secondary_map["COUNTYFP"]], l(attributes[secondary_map["VTDST"]])))
-    #     if not identifying_tuple in already_added_vtds:
-    #         print("Added missing county from secondary source")
-    #         attributes["from_census"] = True
-    #         geoseries_list.append(attributes)
+    try:
+        return geopandas.GeoDataFrame(geoseries_list)
+    except IndexError as e:
+        print(e)
+        print(f"Precinct count: {len(geoseries_list)}")
+        print(geoseries_list[0])
+        return geopandas.GeoDataFrame([geoseries_list for x in geoseries_list if x.all()])
 
-
-    # for i in range(10):
-    #     # Remove overlaps, if they exist
-    #     rtree_map = {id(x["geometry"]): i for i, x in enumerate(geoseries_list)}
-    #     rtree = STRtree([x["geometry"] for x in geoseries_list])
-    #     skip_set = set()
-    #     for location, attributes in tqdm.tqdm(enumerate(geoseries_list)):
-    #         polygon = attributes["geometry"]
-    #         if id(polygon) in skip_set:
-    #             continue
-
-    #         query = rtree.query(polygon)
-    #         intersected_geometries = [(id(x), rtree_map[id(x)]) for x in rtree.query(polygon)]
-
-    #         for identifier, each_index in intersected_geometries:
-    #             if identifier == id(polygon) or each_index == location:
-    #                 continue
-    #             elif identifier in skip_set:
-    #                 continue
-    #             elif normalize(geoseries_list[each_index]["NAME"]) == normalize(attributes["NAME"]):
-    #                 continue
-    #             elif polygon.intersection(geoseries_list[each_index]["geometry"]).area:
-    #                 if attributes["from_census"] and not geoseries_list[each_index]["from_census"]:
-    #                     geoseries_list[each_index]["geometry"] = geoseries_list[each_index]["geometry"].difference(polygon)
-    #                 elif attributes["from_census"] and geoseries_list[each_index]["from_census"]:
-    #                     continue
-    #                 #     raise ValueError
-    #                 elif (not attributes["from_census"]) and (not geoseries_list[each_index]["from_census"]):
-    #                     # Calculate shared perimeter
-    #                     intersection = polygon.intersection(geoseries_list[each_index]["geometry"])
-    #                     common_border_polygon = polygon.boundary.intersection(intersection).length
-    #                     common_border_other = geoseries_list[each_index]["geometry"].boundary.intersection(intersection).length
-
-    #                     if common_border_polygon >= common_border_other:
-    #                         skip_set.add(id(geoseries_list[each_index]["geometry"]))
-    #                         skip_set.add(id(polygon))
-    #                         geoseries_list[each_index]["geometry"] = geoseries_list[each_index]["geometry"] - polygon.buffer(0)
-    #                         skip_set.add(id(geoseries_list[each_index]["geometry"]))
-
-    #                 print("Overlap!")
-
-    print(count) # debugging
-    return geopandas.GeoDataFrame(geoseries_list)
-
-def normalize(name: str) -> str:
-    return name.replace("Voting District", "").split("(")[0].rstrip()
+def normalize(string: str) -> str:
+    p = PrecinctMatcher([],[])
+    return p._normalize(string)
 
 # vtd_shapefiles = glob.glob("census/*_vtd20.shp")
 # print(vtd_shapefiles)
 # merged_shapefile = merge_shapefiles(vtd_shapefiles)
 # merged_shapefile.to_file("PA_vtd.shp")
-census_vtd = geopandas.read_file("census/tl_2020_42_vtd20.shp")
-mcdonald_shapefile = geopandas.read_file("data/pa_2018.shp")
-augmented_shapefile = augment_shapefile(census_vtd, mcdonald_shapefile, threshold=-1)
 
 # augmented_shapefile["geometry"] = maup.resolve_overlaps(augmented_shapefile["geometry"])
-augmented_shapefile.to_file("drafts/PA_with_2018.shp")
+
+### working code:
+# census_vtd = geopandas.read_file("census/tl_2020_42_vtd20.shp")
+# mcdonald_shapefile = geopandas.read_file("data/pa_2018.shp")
+# augmented_shapefile = augment_shapefile(census_vtd, mcdonald_shapefile, threshold=-1)
+
+# augmented_shapefile.to_file("drafts/PA_with_2018.shp")

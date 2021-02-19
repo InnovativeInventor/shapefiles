@@ -1,5 +1,17 @@
-## PA-shapefile
-Steps:
-- merge
-- augment (with 2018, MEDSL)
-- augment some more (open elections)
+## shapefile
+Setup:
+``` python
+aria2c -i census-dl.txt
+```
+
+Running:
+
+``` python
+python3 main.py
+```
+
+AZ cleanup
+``` python
+python3 az_cleanup.py
+```
+
