@@ -1,0 +1,3 @@
+[submodule "openelections/openelections-data-pa"]
+	path = openelections/openelections-data-pa
+	url = https://github.com/openelections/openelections-data-pa
