@@ -14,3 +14,4 @@ if (( i % 2 )) ; then
 curl -L "https://www2.census.gov/geo/tiger/TIGER2020PL/STATE/42_PENNSYLVANIA/42091/tl_2020_"$i"_vtd20.zip" -o "census/tl_2020_"$i"_vtd20.zip"
 fi
 done
+curl -L https://www2.census.gov/geo/pvs/tiger2010st/42_Pennsylvania/42/tl_2010_42_bg10.zip

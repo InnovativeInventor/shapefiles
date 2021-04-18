@@ -1,0 +1,56 @@
+../census/tl_2020_01_vtd20.shp
+../census/tl_2020_02_vtd20.shp
+../census/tl_2020_04_vtd20.shp
+../census/tl_2020_05_vtd20.shp
+../census/tl_2020_06_vtd20.shp
+../census/tl_2020_08_vtd20.shp
+../census/tl_2020_09_vtd20.shp
+../census/tl_2020_10_vtd20.shp
+../census/tl_2020_12_vtd20.shp
+../census/tl_2020_13_vtd20.shp
+../census/tl_2020_15_vtd20.shp
+../census/tl_2020_16_vtd20.shp
+../census/tl_2020_17_vtd20.shp
+../census/tl_2020_18_vtd20.shp
+../census/tl_2020_19_vtd20.shp
+../census/tl_2020_20_vtd20.shp
+../census/tl_2020_21_vtd20.shp
+../census/tl_2020_22_vtd20.shp
+../census/tl_2020_23_vtd20.shp
+../census/tl_2020_24_vtd20.shp
+../census/tl_2020_25_vtd20.shp
+../census/tl_2020_26_vtd20.shp
+../census/tl_2020_27_vtd20.shp
+../census/tl_2020_28_vtd20.shp
+../census/tl_2020_29_vtd20.shp
+../census/tl_2020_30_vtd20.shp
+../census/tl_2020_31_vtd20.shp
+../census/tl_2020_32_vtd20.shp
+../census/tl_2020_33_vtd20.shp
+../census/tl_2020_34_vtd20.shp
+../census/tl_2020_35_vtd20.shp
+../census/tl_2020_36_vtd20.shp
+../census/tl_2020_37_vtd20.shp
+../census/tl_2020_38_vtd20.shp
+../census/tl_2020_39_vtd20.shp
+../census/tl_2020_40_vtd20.shp
+../census/tl_2020_41_vtd20.shp
+         precinct county party  ... provisional  military  extra
+68588  Franklin#1  Adams   DEM  ...         7.0       0.0    0.0
+68589  Franklin#1  Adams   DEM  ...         5.0       0.0    0.0
+68590  Franklin#1  Adams   DEM  ...         5.0       0.0    0.0
+68591  Franklin#1  Adams   DEM  ...         6.0       0.0    0.0
+68592  Franklin#1  Adams   DEM  ...         5.0       0.0    0.0
+68593  Franklin#1  Adams   GRE  ...         0.0       0.0    0.0
+68594  Franklin#1  Adams   GRE  ...         0.0       0.0    0.0
+68595  Franklin#1  Adams   LIB  ...         0.0       0.0    0.0
+68596  Franklin#1  Adams   LIB  ...         0.0       0.0    0.0
+68597  Franklin#1  Adams   LIB  ...         0.0       0.0    0.0
+68598  Franklin#1  Adams   REP  ...        34.0       0.0    0.0
+68599  Franklin#1  Adams   REP  ...        34.0       0.0    0.0
+68600  Franklin#1  Adams   REP  ...        33.0       0.0    0.0
+68601  Franklin#1  Adams   REP  ...        33.0       0.0    0.0
+68602  Franklin#1  Adams   REP  ...        34.0       0.0    0.0
+68603  Franklin#1  Adams   REP  ...        32.0       0.0    0.0
+
+[16 rows x 8 columns]

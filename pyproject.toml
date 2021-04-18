@@ -6,10 +6,13 @@ authors = ["Max Fan <theinnovativeinventor@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pmatcher = "^0.1.3"
+pmatcher = "^0.1.12"
 shapely = "^1.7.1"
 tqdm = "^4.56.2"
 geopandas = "^0.8.2"
+pydantic = "^1.8.1"
+maup = "^0.7"
+pandas = "^1.2.3"
 
 [tool.poetry.dev-dependencies]
 

@@ -18,7 +18,7 @@ def normalize_vtdst(vtdst: str) -> str:
                 return vtdst.rstrip()
 
 def intify(df: pd.DataFrame, attr:str) -> pd.DataFrame:
-    year_data[attr] = list(map(normalize_vtdst, list(year_data[attr])))
+    df[attr] = list(map(normalize_vtdst, list(df[attr])))
     return year_data
 
 
@@ -67,7 +67,7 @@ if __name__ ==  "__main__":
         COUNTYFP = attributes["COUNTYFP10"]
         county_data = year_data_final[year_data_final["COUNTYFP"] == int(COUNTYFP)]
         precincts_match = county_data[year_data_final["VTDST"] == normalize_vtdst(VTDST)]
-        if len(precincts_match):
+        if len(precincts_match) == 1:
             precinct = precincts_match.iloc[0]
 
             matches[precinct["NAME"]] = attributes["NAME10"]
@@ -130,5 +130,7 @@ if __name__ ==  "__main__":
     print(count)
 
     print(count, len(geoseries_list), len(pa_old))
-    geopandas.GeoDataFrame(list(map(lambda x: make_net(x, fallback=False), geoseries_list))).to_file(f"drafts/PA_old_with_2014.shp")
-    geopandas.GeoDataFrame(list(map(lambda x: make_net(x, fallback=True), geoseries_list))).to_file(f"drafts/PA_old_with_2014_fallback.shp")
+    draft_PA = geopandas.GeoDataFrame(list(map(lambda x: make_net(x, fallback=False), geoseries_list)))
+    draft_PA.to_file(f"drafts/PA_old_with_2014.shp")
+    draft_fallback_PA = geopandas.GeoDataFrame(list(map(lambda x: make_net(x, fallback=True), geoseries_list)))
+    draft_fallback_PA.to_file(f"drafts/PA_old_with_2014_fallback.shp")

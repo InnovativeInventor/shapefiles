@@ -1,7 +1,7 @@
 ## shapefile
 Setup:
 ``` python
-aria2c -i census-dl.txt
+aria2c --auto-file-renaming=false -i census-dl.txt
 ```
 
 Running:
